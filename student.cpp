@@ -68,11 +68,11 @@ void Student::setNumDays(double numDays[]) {
 }
 //this print will print everything but the degree type
 void Student::print() {
-	cout << left << setw(5) << sID;
-	cout << left << setw(10) << firstName;
-	cout << left << setw(10) << lastName;
-	cout << left << setw(25) << email;
-	cout << left << setw(10) << age;
+	cout << left << setw(5) << getID();
+	cout << left << setw(10) << getFirstName();
+	cout << left << setw(10) << getLastName();
+	cout << left << setw(25) << getEmail();
+	cout << left << setw(10) << getAge();
 	cout << left << setw(5) << numDays[0];
 	cout << left << setw(5) << numDays[1];
 	cout << left << setw(10) << numDays[2];

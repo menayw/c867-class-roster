@@ -17,10 +17,10 @@ Roster::Roster(int capacity)
     this->classRosterArray = new Student * [capacity];
 }
 
-Student* Roster::getStudentAt(int index)
+/*Student* Roster::getStudentAt(int index)
 {
     return classRosterArray[index];
-}
+}*/
 
 void Roster::parseThenAdd(string row)
 {
@@ -94,29 +94,43 @@ void Roster::add(string stID, string sFirstName, string sLastName, string sEmail
     else classRosterArray[lastIndex] = new SoftwareStudent(stID, sFirstName, sLastName, sEmail, sAge, numDays, deg);
 }
 
-bool Roster::remove(string sID)
+void Roster::remove(string sID)//bool
 {
-    bool found = false;
-    for (int i = 0; i <= lastIndex; i++) {
-        if (this->classRosterArray[i]->getID() == sID)//if the student is found
-        {
-            found = true;
-            //delete it
-            delete this->classRosterArray[i];
-            this->classRosterArray[i] = this->classRosterArray[lastIndex];
-            lastIndex--;
+    /*  bool found = false;
+      for (int i = 0; i <= lastIndex; i++) {
+          if (this->classRosterArray[i]->getID() == sID)//if the student is found
+          {
+              found = true;
+              //delete it
+              delete this->classRosterArray[i];
+              this->classRosterArray[i] = this->classRosterArray[lastIndex];
+              lastIndex--;
+          }
+      }
+      return found;//if student is not found, found stays false*/
+    for (int i = 0; i <= lastIndex; ++i) {
+        if (classRosterArray[i] == nullptr) {
+            cout << "ERROR! Student ID: " << sID << " not found.\n";
+            break;
+        }
+        else if (sID == classRosterArray[i]->getID()) {
+            classRosterArray[i] = nullptr;
+            cout << "Student removed\n";
         }
     }
-    return found;//if student is not found, found stays false
+    cout << "\n----------------------------------------------- \n";
 }
 
 void Roster::print_All()
 {
+    cout << "Displaying all Students:\n\n";
+
     for (int i = 0; i <= this->lastIndex; i++)(this->classRosterArray)[i]->print();
 }
 
 void Roster::printAvgNumDays(string sID)
 {
+
     bool found = false;
     for (int i = 0; i <= lastIndex; i++)
     {
@@ -128,45 +142,31 @@ void Roster::printAvgNumDays(string sID)
         }
     }
     if (!found) cout << "Student not found; \n";
+
 }
 
 void Roster::printInvalidEmail()
 {
-    cout << "\n-----------------------------------------------\n \n";
+    cout << "\n-----------------------------------------------\n";
     cout << "Displaying invalid email entries:\n\n";
-    bool any = false;
-    for (int i = 0; i <= lastIndex; i++)
-    {
-        any = false;
-        string e = classRosterArray[i]->getEmail();
-        if (e.find('@')==string::npos || e.find('.') == string::npos || e.find(' ') != string::npos)
-        {
-            cout << e <<"\n";
-            any = true;
+    for (int i = 0; i <= lastIndex; ++i) {
+        string email = classRosterArray[i]->getEmail();
+        if ((email.find("@") == string::npos) || (email.find(" ") != string::npos) || (email.find(".") == string::npos)) {
+            cout << "The email for Student " << classRosterArray[i]->getID() << " is not valid: " << email << "\n";
         }
-  /*      for (int j = 0; j < Student::dayArraySize; j++)
-        {
-            if (e[j] < 0)
-            {
-                any = true;
-                cout << "Student: " << classRosterArray[i]->getID() << ",  Email: ";
-                cout << e[j] << " ";
-            }
-        }*/
-       // if (any) cout << "\n"; go to new line between each one that there is
-
     }
-        if (any==false) cout << "No more invalid emails.\n";//if there isnt any inavlid emails, print None
+    cout << "\n----------------------------------------------- \n";
 }
 
 void Roster::printByDegType(DegreeType d)
 {
-    cout << "\n----------------------------------------------- \n\n";
+    cout << "\n----------------------------------------------- \n";
     cout << "Printing Students by Degree Type: " << degreeTypeStrings[d] << "\n\n";
     for (int i = 0; i <= lastIndex; i++)
     {
         if (this->classRosterArray[i]->getDegType() == d)this->classRosterArray[i]->print();
     }
+    cout << "\n----------------------------------------------- \n";
 }
 
 Roster::~Roster()//delete all students 
@@ -175,65 +175,52 @@ Roster::~Roster()//delete all students
     {
         delete this->classRosterArray[i];
     }
-    delete classRosterArray;
+    delete this;
 }
 
 int main()
 {
     //Add a title to the output
-    cout << "\n----------------------------------------------- \n\n";
+    cout << "----------------------------------------------- \n";
     cout << "Scripting and Programming - Applications - C867 \n";
     cout << "C++ \n";
     cout << "ID001243438 \n";
     cout << "Menay Wilde \n";
-    cout << "\n----------------------------------------------- \n\n";
+    cout << "\n----------------------------------------------- \n";
 
-    int numStudents = 5;
-    const string studentData[] =
-    { "A1,John,Smith,John1989@gm ail.com,20,30,35,40,SECURITY",
-    "A2,Suzan,Erickson,Erickson_1990@gmailcom,19,50,30,40,NETWORK",
-    "A3,Jack,Napoli,The_lawyer99yahoo.com,19,20,40,33,SOFTWARE",
-    "A4,Erin,Black,Erin.black@comcast.net,22,50,58,40,SECURITY",
-    "A5,Menay,Wilde,mwild33@wgu.edu,27,10,15,20,SOFTWARE"
-    };
 
+    //parse the data
     Roster* classRoster = new Roster(numStudents);
-    cout << "Adding Students and Creating Roster:\t";
     for (int i = 0; i < numStudents; i++) {//add students to roster
         classRoster->parseThenAdd(studentData[i]);
     }
-    cout << "Roster Complete. \n";
-    cout << "\nDisplaying all Students:\n";
-    classRoster->print_All();//display all students
 
-    classRoster->printInvalidEmail();//print any emails that have an error
-    cout << "\n----------------------------------------------- \n\n";
+    //display all students
+    classRoster->print_All();
+
+    //print any emails that have an error
+    classRoster->printInvalidEmail();
+
+
+    //print avg # of days in 3 courses for each student
     cout << "Printing Average Number of Days in a Course Per Student:\n\n";
     for (int i = 0; i < numStudents; i++) {
-        classRoster->printAvgNumDays(classRoster->getStudentAt(i)->getID());
+        classRoster->printAvgNumDays(classRoster->classRosterArray[i]->getID());
     }
 
-    //print student by their degree type
-     //I believe only the software program displayed is wanted. if that is not correct then here is the code to print all 3 degrees
-     //    for (int i = 0; i < 3; i++) classRoster->printByDegType((DegreeType)i);
+
+    //print student by their degree type if they are a software student
     classRoster->printByDegType((DegreeType)SOFTWARE);
 
-    cout << "\n----------------------------------------------- \n\n";
-    cout << "\nRemoving Student A3:\n\n";//remove with student id
-    if (classRoster->remove("A3")) {
- //       classRoster->print_All();
-        cout << "SUCCESS! Student has been removed.\n";
-        numStudents--;
-    }
-    else cout << "Student not found. \n";
+    //remove with student id A3
+    cout << "Removing Student A3:\n\n";
+    classRoster->remove("A3");
 
-    cout << "\n----------------------------------------------- \n\n";
-    cout << "\nRemoving Student A3:\n\n";//remove again to check
-    if (classRoster->remove("A3"))
-        cout << "SUCCESS! Student has been removed.\n";
-    else cout << "Student not found (has already been removed). \n";
-    cout << "\n----------------------------------------------- \n\n";
+    //remove again to check and send out the error code to verify
+    cout << "Removing Student A3:(to check it was properly removed)\n\n";
+    classRoster->remove("A3");
 
     system("pause");//hold window open
     return 0;
 }
+
